@@ -1,0 +1,39 @@
+Author: Barsha Shrestha 8/24/15
+
+    Objective: Finding the Pearson Correlation Coefficient using Spark in local mode
+
+    This is a python script to analyze all the data as part of a data challenge.
+    The challenge was to compute the correlation between food prices & Census income data at a zip-code level, within the city of San Diego.
+
+    There were 3 datasets provided (O, B, C) :
+    O = Food price observations. Observations carry latitude, longitude and price, among other columns. 
+    They also have a spec_uuid which refers to a specific food product, the meta data about which is in file B below.
+    Note that each spec_uuid can have multiple packaging variants, so we have provided the normalized_price and normalized_size_units fields.
+    
+    B = food products taxonomy. A map from spec_uuid to the bundle.
+ Pay special attention to the columns, uuid and bundle e.g. Pork Spare Ribs → Meat
+
+    C = Per zipcode income data from US Census.
+    Pay particular attention to the column A00100 (adjusted gross income)
+    The data-dictionary is also included as a word doc file (us-income-by-zip-12zdefinition.doc).
+
+    
+    I used Spark with Spark SQL for batch processing and making queries/dataframes respectively.
+    While Spark isn't a good tool for small data, with a larger dataset and distributed computing, the processing will be much
+    faster than with a small dataset.
+    
+    I used iPython notebook with the databricks package for csv (com.databricks:spark-csv_2.10:1.1.0) along with 4 threads 
+    running on my local machine. The entire bash command is below:
+    PYSPARK_DRIVER_PYTHON=/Library/Frameworks/Python.framework/Versions/2.7/bin/ipython PYSPARK_DRIVER_PYTHON_OPTS="notebook --no-browser --port=7777" $SPARK_HOME/bin/pyspark --packages com.databricks:spark-csv_2.10:1.1.0 --master local[4]
+
+    For this to run, the jar file that was build from spark-csv github (spark-csv_2.11-1.2.0.jar) needs to be in Spark's home directory too.
+    
+    I calculated the Pearsons correlation coefficient for each bundle. The result is in a file named 'Pearson_coeff_by_bundle.csv', which is in this folder. 
+    
+    I also made a sample scatter plot of food metric vs. weighted AGI by each zip code, for each bundle ('Pearson_Correlation_Coeff_Vegetables').
+
+    There is also a sample code adapted from http://www.christianpeccei.com/zipmap/ that helps plot AGI(Adjusted Gross Income) per zip code per bundle or food metric per zip code per bundle (in this case, vegetable) as necessary. It is only a sample to show how the visualizations can be achieved after the data points are obtained. The picture obtained is ‘SD_AGI.png’, also in this folder.
+    
+    Out of the 14 bundles, 9 of them had a negative coefficient and 5 of them had a positive coefficient.
+    
+    I made many tables to keep track of what exactly consisted in each dataframe. The code below in its entirety if ran on Terminal using the command posted above, should run all the way to provide the pearson correlation coefficient by zip code, for each bundle (the code for creating sample plot will have to be commented out as that cannot be done in a spark shell, same for zip code plot on the map)
